@@ -1,6 +1,6 @@
 {
   "name": "react-native-sqlite-windows",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "SQLite for React Native Windows",
   "source": "./src/index.tsx",
   "main": "./lib/commonjs/index.js",
