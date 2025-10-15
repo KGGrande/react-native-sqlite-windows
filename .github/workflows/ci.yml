@@ -1,8 +1,8 @@
 name: CI
 on:
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
   pull_request:
     branches:
       - main
@@ -51,7 +51,6 @@ jobs:
         run: yarn prepare && yarn codegen
 
   build-react-native-windows:
-    name: Build & Test React Native Windows
     runs-on: windows-2022
 
     steps:
