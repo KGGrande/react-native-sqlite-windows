@@ -35,7 +35,8 @@
     "!**/__tests__",
     "!**/__fixtures__",
     "!**/__mocks__",
-    "!**/.*"
+    "!**/.*",
+    "windows"
   ],
   "scripts": {
     "example": "yarn workspace react-native-sqlite-windows-example",
@@ -82,13 +83,15 @@
     "react": "19.0.0",
     "react-native": "0.79.0",
     "react-native-builder-bob": "^0.38.3",
+    "react-native-windows": "0.79.0",
     "release-it": "^17.10.0",
     "turbo": "^1.10.7",
     "typescript": "^5.2.2"
   },
   "peerDependencies": {
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-windows": "*"
   },
   "workspaces": [
     "example"
@@ -182,7 +185,7 @@
     ]
   },
   "codegenConfig": {
-    "name": "RNSqliteWindowsSpec",
+    "name": "ReactNativeSqliteWindowsSpec",
     "type": "modules",
     "jsSrcsDir": "src",
     "outputDir": {
@@ -192,11 +195,23 @@
     "android": {
       "javaPackageName": "com.sqlitewindows"
     },
-    "includesGeneratedCode": true
+    "includesGeneratedCode": true,
+    "windows": {
+      "namespace": "ReactNativeSqliteWindowsCodegen",
+      "outputDirectory": "windows/ReactNativeSqliteWindows/codegen",
+      "separateDataTypes": false
+    }
   },
   "create-react-native-library": {
     "type": "turbo-module",
     "languages": "kotlin-objc",
     "version": "0.48.9"
+  },
+  "react-native-windows": {
+    "init-windows": {
+      "name": "ReactNativeSqliteWindows",
+      "namespace": "ReactNativeSqliteWindows",
+      "template": "cpp-lib"
+    }
   }
 }
