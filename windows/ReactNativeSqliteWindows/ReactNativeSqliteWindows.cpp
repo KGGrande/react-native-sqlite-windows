@@ -2,6 +2,7 @@
 #include "ReactNativeSqliteWindows.h"
 #include "sqlite3.h" // native SQLite C API
 #include <filesystem>
+#include <winrt/Windows.Storage.h>
 
 namespace winrt::ReactNativeSqliteWindows
 {
@@ -24,11 +25,19 @@ namespace winrt::ReactNativeSqliteWindows
 
   std::wstring ReactNativeSqliteWindows::GetDatabasePath(std::string const& name)
   {
+
+    using namespace winrt::Windows::Storage;
+
+    // Convert the UTF-8 db name to UTF-16 for Windows
     std::wstring wname(name.begin(), name.end());
-    std::filesystem::path folder = std::filesystem::temp_directory_path();
-    std::filesystem::path fullPath = folder / (wname + L".db");
-    OutputDebugStringW((L"GetDatabasePath: " + fullPath.wstring() + L"\n").c_str());
-    return fullPath.wstring();
+
+    // Get the app’s local storage folder (safe, persistent)
+    auto localFolder = ApplicationData::Current().LocalFolder().Path();
+
+    // Combine it with the database file name
+    std::filesystem::path dbPath = std::filesystem::path(localFolder.c_str()) / (wname + L".db");
+
+    return dbPath.wstring();
   }
 
   void ReactNativeSqliteWindows::open(std::string dbName, React::ReactPromise<std::string>&& promise) noexcept {

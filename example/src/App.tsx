@@ -10,6 +10,7 @@ import {
   TextInput,
   Alert,
   ActivityIndicator,
+  Modal,
 } from 'react-native';
 import { openDatabase, SQLiteDatabase } from 'react-native-sqlite-windows';
 
@@ -32,6 +33,9 @@ const App = () => {
   const [email, setEmail] = useState('');
   const [age, setAge] = useState('');
 
+  const [editVisible, setEditVisible] = useState(false);
+  const [editUser, setEditUser] = useState<any | null>(null);
+  const [editName, setEditName] = useState('');
   // Initialize database
   const initDatabase = async () => {
     try {
@@ -125,7 +129,7 @@ const App = () => {
       setLoading(true);
       const result = await db.executeSql(
         'INSERT INTO users (name, email, age) VALUES (?, ?, ?)',
-        [name, email, parseInt(age)]
+        [name, email, parseInt(age, 10)]
       );
 
       // Ensure insertId is valid number
@@ -148,27 +152,27 @@ const App = () => {
     }
   };
 
-  // Update user
-  // const updateUser = async (id: number, newName: string) => {
-  //   if (!db) return;
+  //Update user
+  const updateUser = async (id: number, newName: string) => {
+    if (!db) return;
 
-  //   try {
-  //     setLoading(true);
-  //     const result = await db.executeSql(
-  //       'UPDATE users SET name = ? WHERE id = ?',
-  //       [newName, id]
-  //     );
+    try {
+      setLoading(true);
+      const result = await db.executeSql(
+        'UPDATE users SET name = ? WHERE id = ?',
+        [newName, id]
+      );
 
-  //     setStatus(`Updated ${result.rowsAffected} user(s)`);
-  //     Alert.alert('Success', `User updated successfully`);
-  //     await loadUsers();
-  //   } catch (error) {
-  //     setStatus(`Error updating user: ${error}`);
-  //     Alert.alert('Update Error', String(error));
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+      setStatus(`Updated ${result.rowsAffected} user(s)`);
+      Alert.alert('Success', `User updated successfully`);
+      await loadUsers();
+    } catch (error) {
+      setStatus(`Error updating user: ${error}`);
+      Alert.alert('Update Error', String(error));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Delete user
   const deleteUser = async (id: number, userName: string) => {
@@ -486,14 +490,14 @@ const App = () => {
                     <Text style={styles.userDetail}>Age: {user.age}</Text>
                   </View>
                   <View style={styles.userActions}>
-                    {/* <Button
+                    <Button
                       title="Edit"
                       onPress={() => {
-                        Alert.alert('Update Name', 'Enter new name:', (text) =>
-                          updateUser(user.id, text)
-                        );
+                        setEditUser(user);
+                        setEditName(user.name);
+                        setEditVisible(true);
                       }}
-                    /> */}
+                    />
                     <Button
                       title="Delete"
                       color="red"
@@ -505,6 +509,37 @@ const App = () => {
             )}
           </View>
         )}
+        {/* Edit Modal */}
+        <Modal visible={editVisible} transparent animationType="fade">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.sectionTitle}>Edit User</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter new name"
+                value={editName}
+                onChangeText={setEditName}
+              />
+              <View style={styles.buttonRow}>
+                <Button
+                  title="Save"
+                  onPress={() => {
+                    if (editUser && editName.trim()) {
+                      updateUser(editUser.id, editName.trim());
+                      setEditVisible(false);
+                      Alert.alert('Success', 'User updated');
+                    }
+                  }}
+                />
+                <Button
+                  title="Cancel"
+                  color="gray"
+                  onPress={() => setEditVisible(false)}
+                />
+              </View>
+            </View>
+          </View>
+        </Modal>
       </ScrollView>
     </SafeAreaView>
   );
@@ -603,6 +638,19 @@ const styles = StyleSheet.create({
     color: '#999',
     fontSize: 16,
     padding: 20,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 12,
+    width: '80%',
+    elevation: 5,
   },
 });
 
