@@ -119,6 +119,7 @@
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
     <ClCompile Include="sqlite3.c">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalOptions>%(AdditionalOptions) /Y-</AdditionalOptions>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
